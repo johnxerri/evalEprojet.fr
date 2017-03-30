@@ -1,5 +1,9 @@
 Exercices proposés par le site Eprojet.fr :
 
+<%= octicon "clock" %> Temps d'étude : 10 jours.
+Date de début : 30/03/2017
+Date de fin éstimé : 09/04/2017
+
 <a href="https://www.eprojet.fr/cours/php/20-php-evaluation" target="_blank">Voir le site</a>
 
 <ul>

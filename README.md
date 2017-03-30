@@ -19,3 +19,5 @@ Exercices proposés par le site Eprojet.fr :
 	<li>:pushpin: 20.09   Exercice 7.1 : Les pages web côté FRONT</li>
 	<li>:pushpin: 20.10   Exercice 7.2 : Les pages web côté BACK</li>
 </ul>
+
+/play sexyback

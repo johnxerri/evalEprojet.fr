@@ -1,6 +1,6 @@
 Exercices proposés par le site Eprojet.fr :
 
-![alt tag](https://www.eprojet.fr/cours/php/20-php-evaluation)
+<a href="https://www.eprojet.fr/cours/php/20-php-evaluation" target="_blank">Voir le site</a>
 
 <ul>
 	<li>20. Evaluation</li>

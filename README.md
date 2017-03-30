@@ -1,10 +1,10 @@
-Exercices proposés par le site Eprojet.fr :
+Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php-evaluation" target="_blank">Eprojet.fr</a> :
 
 :clock8: Temps d'étude : 10 jours.<br />
 :date: Date de début : 30/03/2017<br />
 :date: Date de fin éstimé : 09/04/2017<br />
 
-<a href="https://www.eprojet.fr/cours/php/20-php-evaluation" target="_blank">Voir le site</a>
+<hr />
 
 <ul>
 	<li>:open_file_folder: 20. Evaluation</li>
@@ -19,3 +19,7 @@ Exercices proposés par le site Eprojet.fr :
 	<li>:pushpin: [✘] 20.09   Exercice 7.1 : Les pages web côté FRONT</li>
 	<li>:pushpin: [✘] 20.10   Exercice 7.2 : Les pages web côté BACK</li>
 </ul>
+
+<hr />
+
+![alt tag](https://github.com/johnxerri/SimplyHarvest/blob/master/PrtSc/95.png)

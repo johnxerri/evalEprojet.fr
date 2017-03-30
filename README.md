@@ -8,7 +8,10 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 
 <ul>
 	<li>:open_file_folder: 20. Evaluation</li>
-	<li>:pushpin: [✘] 20.01   Exercice 1 : Formulaire POST</li>
+	<li>
+		:pushpin: [✔] 20.01   Exercice 1 : Formulaire POST
+		![alt tag](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/95.png)
+	</li>
 	<li>:pushpin: [✘] 20.02   Exercice 2 : Liens GET</li>
 	<li>:pushpin: [✘] 20.03   Exercice 3 : Boucle</li>
 	<li>:pushpin: [✘] 20.04   Exercice 4 : Calculatrice</li>
@@ -21,5 +24,3 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 </ul>
 
 <hr />
-
-![alt tag](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/95.png)

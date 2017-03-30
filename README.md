@@ -23,4 +23,4 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 <hr />
 
 <h3>Exercice 1 : Formulaire POST</h3>
-![alt tag](evalEprojet.fr/PrtSc/95.png)
+![alt tag](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/95.png)

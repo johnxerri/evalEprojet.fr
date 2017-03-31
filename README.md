@@ -11,7 +11,7 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 	<li>:pushpin: [✔] 20.01   Exercice 1 : Formulaire POST</li>
 	<li>:pushpin: [✔] 20.02   Exercice 2 : Liens GET</li>
 	<li>:pushpin: [✔] 20.03   Exercice 3 : Boucle</li>
-	<li>:pushpin: [✘] 20.04   Exercice 4 : Calculatrice</li>
+	<li>:pushpin: [✔] 20.04   Exercice 4 : Calculatrice</li>
 	<li>:pushpin: [✘] 20.05   Exercice 5 : Création d'un Repertoire</li>
 	<li>:pushpin: [✘] 20.06   Exercice 6 : Création d'une Bibliothèque</li>
 	<li>:pushpin: [✘] 20.07   Exercice 7 : Création d'une console</li>
@@ -30,3 +30,6 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 
 <h3>Exercice 3 : Boucle</h3>
 ![alt exo3](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/97.png)
+
+<h3>Exercice 4 : Calculatrice</h3>
+![alt exo3](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/98.png)

@@ -32,4 +32,4 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 ![alt exo3](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/97.png)
 
 <h3>Exercice 4 : Calculatrice</h3>
-![alt exo3](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/98.png)
+![alt exo4](https://github.com/johnxerri/evalEprojet.fr/blob/master/PrtSc/98.png)

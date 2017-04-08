@@ -23,15 +23,19 @@ Exercices proposés par le site <a href="https://www.eprojet.fr/cours/php/20-php
 <hr />
 
 <h3>Exercice 1 : Formulaire POST</h3>
+
 ![image de l'exo1](PrtSc/95.png)
 
 <h3>Exercice 2 : Liens GET</h3>
+
 ![image de l'exo2](PrtSc/96.png)
 
 <h3>Exercice 3 : Boucle</h3>
+
 ![image de l'exo3](PrtSc/97.png)
 
 <h3>Exercice 4 : Calculatrice</h3>
+
 ![image de l'exo4](PrtSc/98.png)
 
 <h3>Exercice 5 : Création d'un Repertoire</h3>

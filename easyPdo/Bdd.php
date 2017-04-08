@@ -30,7 +30,7 @@
 */
 class Bdd {
 
-	private static $_nom_base   = "repertoire"; // repertoire
+	private static $_nom_base   = "bibliotheque";
     private static $_pass       = "";
     private static $_username   = "root";
     private static $_host       = "localhost";
@@ -311,7 +311,9 @@ class Bdd {
 
 		$pdo_stmt = $bdd->prepare($sql);
 		foreach($data as $key => $value){
-			$value = htmlentities($value, ENT_QUOTES); // anti injection SQL
+			if (is_string($value)) {
+				$value = htmlentities($value, ENT_QUOTES); // anti injection SQL
+			}
 			$pdo_stmt->bindValue(":".$key, $value);
 		}
 		$result = $pdo_stmt->execute();

@@ -1,15 +1,42 @@
 <?php
 require "inc/function.inc.php";
 
-  $abonne = $em->setTable("abonne")->findAll();
-  $livre = $em->setTable("livre")->findAll();
-
-$emprunt = $em->setTable("emprunt")->findAll("id_emprunt", "DESC", 3);
-var_dump($emprunt);
+$abonne = $em->setTable("abonne")->findAll();
+$livre = $em->setTable("livre")->findAll();
+$emprunt = $em->setTable("emprunt")->findAll("id_emprunt", "DESC");
 
 $erreur = '';
-if ( isset($_GET) && isset($_GET['method']) == "insert" ) {
-  $erreur .= '<div class="alert alert-success"><p>L\'emprunt à bien été ajouté.</p></div>';
+if ($_GET) {
+
+  /* ==================================================================== */
+  // MESSAGE D AJOUT
+  if ( isset($_GET['method']) && $_GET['method'] == "insert" ) {
+    $erreur .= '<div class="alert alert-success"><p>L\'emprunt à bien été ajouté.</p></div>';
+  }
+  // MESSAGE DE SUPPRESSION
+  if ( isset($_GET['method']) && $_GET['method'] == "suppr" && !empty($_GET['id']) ) {
+    $erreur .= '<div class="alert alert-success"><p>L\'emprunt '.$_GET['id'].' à bien été supprimé.</p></div>';
+  }
+  // MESSAGE DE MODIF
+  if ( isset($_GET['method']) && $_GET['method'] == "modif" ) {
+    $erreur .= '<div class="alert alert-success"><p>L\'emprunt à bien été modifié.</p></div>';
+  }
+
+  /* ==================================================================== */
+  // SUPPRESSION 
+  if ( isset($_GET['stat']) && $_GET['stat'] == "delete" && !empty($_GET['id']) ) {
+    $id = $_GET['id'];
+    $em->remove($id);
+    header('location:emprunt.php?method=suppr&id='.$id);
+  }
+  // MODIFICATION
+  if ( isset($_GET['stat']) && $_GET['stat'] == "edit" && !empty($_GET['id']) ) {
+    $id = $_GET['id'];
+    $modif = $em->find($id);
+  }
+
+  /* ==================================================================== */
+
 }
 if($_POST){
 
@@ -24,10 +51,20 @@ if($_POST){
   // ------------ VALIDATION :
   if( empty($erreur) ){ // Si $erreur est vide donc pas d erreur
     $em->replace($_POST);
-    header('location:emprunt.php?method=insert');
+    if (!empty($_POST['id_emprunt'])) {
+      header('location:emprunt.php?method=modif');
+    } else {
+      header('location:emprunt.php?method=insert');
+    }
   }
 
 }
+
+// VARIABLE DE VALUE :
+$valueId = (!empty($modif[0]['id_emprunt'])) ? '<input type="hidden" name="id_emprunt" value="'.$modif[0]['id_emprunt'].'" />' : '';
+
+$valueDateSorti = (!empty($modif[0]['date_sortie'])) ? 'value="'.$modif[0]['date_sortie'].'"' : '';
+$valueDateRendu = (!empty($modif[0]['date_rendu'])) ? 'value="'.$modif[0]['date_rendu'].'"' : '';
 
 ?>
 <!DOCTYPE html>
@@ -49,6 +86,7 @@ if($_POST){
 
     <style type="text/css">
       
+      table, th, td { text-align: center; }
       label { width: 100%; }
       select, input {
         height: 34px;
@@ -81,20 +119,50 @@ if($_POST){
   	<!-- MENU -->
     <?php require "inc/menu.php"; ?>
 
-    <div class="container">
+    <div class="container" style="padding-bottom: 40px;">
 
     	<h1>emprunt(s)</h1>
 
       <?= $erreur; ?>
 
+      <?= '<p>Nombre d\'emprunts : <span class="badge">'.$em->rowCount().'</span></p>'; ?>
+
+      <?php 
+        echo '<table class="table" style="width:100%; margin: 30px 0;"><thead><tr>';
+        for($i=0; $i < $em->columnCount(); $i++)
+        {
+          echo '<th>' . $em->getColumnMeta($i)['name'] . '</th>';
+        }
+        echo "<th>Edit</th><th>Delete</th>";
+        echo '</tr></thead><tbody>';
+        foreach ($emprunt as $tab) 
+        {
+          echo '<tr>';
+          foreach ($tab as $info) 
+          {
+            echo '<td>' . $info . '</td>';
+          }
+          echo "<td><a href='?stat=edit&id=".$tab['id_emprunt']."'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a></td>";
+          echo "<td><a href='?stat=delete&id=".$tab['id_emprunt']."' onClick='return(confirm(\"En etes vous certain ?\"))'><i class='fa fa-trash-o' aria-hidden='true'></i></a></td>";
+          echo '</tr>';
+        }
+        echo '</tbody></table>';
+      ?>
+
       <form method="post" action="emprunt.php">
         
+        <?= $valueId; ?>
+
         <div class="form-group">
           <label for="abonne">Abonné</label>
           <select name="id_abonne" id="abonne">
             <?php
               foreach ($abonne as $value) {
-                echo "<option value='".$value['id_abonne']."'>".$value['id_abonne'].' - '.$value['prenom']."</option>";
+                if ($modif[0]['id_abonne'] == $value['id_abonne']) {
+                  echo "<option value='".$value['id_abonne']."' selected>".$value['id_abonne'].' - '.$value['prenom']."</option>";
+                } else {
+                  echo "<option value='".$value['id_abonne']."'>".$value['id_abonne'].' - '.$value['prenom']."</option>";
+                }
               }
             ?>
           </select>
@@ -105,7 +173,11 @@ if($_POST){
           <select name="id_livre" id="livre">
             <?php
               foreach ($livre as $value) {
-                echo "<option value='".$value['id_livre']."'>".$value['id_livre'].' - '.$value['auteur']." | ".$value['titre']."</option>";
+                if ($modif[0]['id_livre'] == $value['id_livre']) {
+                  echo "<option value='".$value['id_livre']."' selected>".$value['id_livre'].' - '.$value['auteur']." | ".$value['titre']."</option>";
+                } else {
+                  echo "<option value='".$value['id_livre']."'>".$value['id_livre'].' - '.$value['auteur']." | ".$value['titre']."</option>";
+                }
               }
             ?>
           </select>
@@ -113,17 +185,106 @@ if($_POST){
 
         <div class="form-group">
           <label for="dateSorti">Date Sortie</label>
-          <input type="date" name="date_sortie" id="dateSorti">
+          <input type="date" name="date_sortie" id="dateSorti" <?= $valueDateSorti; ?> />
         </div>
 
         <div class="form-group">
           <label for="dateRendu">Date Rendu</label>
-          <input type="date" name="date_rendu" id="dateRendu">
+          <input type="date" name="date_rendu" id="dateRendu" <?= $valueDateRendu; ?> />
         </div>
 
-        <button type="submit" class="btn btn-default">Ajouter</button>
+        <button type="submit" class="btn btn-default"><?= (!empty($_GET['stat']) && $_GET['stat'] == 'edit') ? "Modifier" : "Ajouter"; ?></button>
 
       </form>
+
+      <br /><hr /><br />
+      <!-- Afficher les numéros et titres des livres n’ayant pas été rendus à la bibliothèque -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT id_livre, auteur, titre AS 'Livre non RENDU' FROM livre WHERE id_livre IN ( SELECT id_livre FROM emprunt WHERE date_rendu IS NULL )"); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher le n° de(s) livre(s) que Chloé a emprunté à la bibliothèque -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT id_livre AS 'Livre emprunté par Chloé' FROM emprunt WHERE id_abonne = '3' IN (SELECT id_abonne FROM abonne WHERE prenom = 'Chloé')"); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher la liste des abonnés ayant déjà emprunté un livre d’Alphonse DAUDET -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT prenom AS 'Abonnés ayant déja emprunté un livre d\'Alphonse Daudet.' FROM abonne WHERE id_abonne IN (SELECT id_abonne FROM emprunt WHERE id_livre IN (SELECT id_livre FROM livre WHERE auteur = 'ALPHONSE DAUDET'))"); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher les titres des livres que Chloé n’a pas encore rendus à la bibliothèque -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT titre AS 'Livres que Chloé n\'a pas encore rendu' FROM livre WHERE id_livre IN (SELECT id_livre FROM emprunt WHERE date_rendu IS NULL AND id_abonne = (SELECT id_abonne FROM abonne WHERE prenom = 'Chloe'  ))"); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher les titres des livres que Chloé n’a pas encore empruntés -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT titre AS 'Livres que Chloé n\'a pas emprunté' FROM livre WHERE id_livre NOT IN (SELECT id_livre FROM emprunt WHERE id_abonne IN (SELECT id_abonne FROM abonne WHERE prenom = 'Chloe'))"); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher le prénom de l’abonné ayant emprunté le plus de livres -->
+      <?php 
+        $resultat = $em->sqlQuery("
+          SELECT a.prenom, COUNT(e.id_livre) AS 'livreEmprunté'
+          FROM abonne a, emprunt e
+          WHERE a.id_abonne = e.id_abonne
+          GROUP BY a.prenom;
+        "); 
+        $max = count($resultat);
+        $precedent = 0;
+        $maxAbonne = [];
+        for ($i=0; $i < $max; $i++) { 
+          if ( $resultat[$i]['livreEmprunté'] > $precedent ) {
+            $precedent = $resultat[$i]['livreEmprunté'];
+            $maxAbonne['prenom'] = $resultat[$i]['prenom'];
+            $maxAbonne['livreEmprunté'] = $resultat[$i]['livreEmprunté'];
+          }
+        }
+        echo "<p>Prénom de l’abonné ayant emprunté le plus de livres : ".$maxAbonne['prenom']."</p>";
+      ?>
+      <!-- Afficher le nombre de livre emprunté par Guillaume -->
+      <?php 
+        $resultat = $em->sqlQuery("SELECT titre AS 'Livres que Chloé a emprunté' FROM livre WHERE id_livre IN (SELECT id_livre FROM emprunt WHERE id_abonne = (SELECT id_abonne FROM abonne WHERE prenom = 'Guillaume'))"); 
+        echo "<p>Nombre de livre emprunté par Guillaume : ".count($resultat)."</p>";
+      ?>
+      <!-- Afficher la liste des abonnés ayant emprunté le livre « Une Vie » sur l’année 2011 -->
+      <?php 
+        $resultat = $em->sqlQuery("
+          SELECT a.prenom, l.titre, e.date_sortie
+          FROM abonne a, livre l, emprunt e
+          WHERE a.id_abonne = e.id_abonne
+          AND l.id_livre = e.id_livre
+          AND l.titre = 'Une vie'
+          AND e.date_sortie LIKE '2011%'
+        ");
+        if (empty($resultat)) {
+          echo "Liste des abonnés ayant emprunté le livre « Une Vie » sur l’année 2011 : Personne";
+        } else {
+          echo "<p>Liste des abonnés ayant emprunté le livre « Une Vie » sur l’année 2011 :</p>";
+          $em->stylish($resultat);
+        }
+      ?>
+      <!-- Afficher le nombre de livres empruntés par chaque abonné -->
+      <?php 
+        $resultat = $em->sqlQuery("
+          SELECT a.prenom, COUNT(e.id_livre) AS 'Nombre de livre emprunté'
+          FROM abonne a, emprunt e
+          WHERE a.id_abonne = e.id_abonne
+          GROUP BY a.prenom
+        "); 
+        $em->stylish($resultat);
+      ?>
+      <!-- Afficher la liste des abonnés avec les titres des livres qu’ils ont empruntés ainsi que la date de l’emprunt -->
+      <?php 
+        $resultat = $em->sqlQuery("
+          SELECT a.prenom, l.titre, e.date_sortie
+          FROM abonne a, livre l, emprunt e
+          WHERE a.id_abonne = e.id_abonne
+          AND l.id_livre = e.id_livre
+        "); 
+        $em->stylish($resultat);
+      ?>
 
     </div><!-- /.container -->
 

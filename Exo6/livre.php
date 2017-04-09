@@ -4,8 +4,37 @@ require "inc/function.inc.php";
 $livre = $em->setTable("livre")->findAll("id_livre", "DESC");
 
 $erreur = '';
-if (isset($_GET) && isset($_GET['method']) == "insert" && isset($_GET['auteur']) && isset($_GET['titre'])) {
-  $erreur .= '<div class="alert alert-success"><p>Le livre '.$_GET['titre'].' de l\'auteur '.$_GET['auteur'].' à bien été ajouté.</p></div>';
+if ($_GET){
+
+  /* ==================================================================== */
+  // MESSAGE D AJOUT
+  if ( isset($_GET['method']) && $_GET['method'] == "insert" && isset($_GET['auteur']) && isset($_GET['titre'])) {
+    $erreur .= '<div class="alert alert-success"><p>Le livre '.$_GET['titre'].' de l\'auteur '.$_GET['auteur'].' à bien été ajouté.</p></div>';
+  }
+  // MESSAGE DE MODIF
+  if ( isset($_GET['method']) && $_GET['method'] == "modif" && isset($_GET['auteur']) && isset($_GET['titre'])) {
+    $erreur .= '<div class="alert alert-success"><p>Le livre '.$_GET['titre'].' de l\'auteur '.$_GET['auteur'].' à bien été modifié.</p></div>';
+  }
+  // MESSAGE D ERREUR
+  if ( isset($_GET['method']) && $_GET['method'] == "suppr" && !empty($_GET['id']) ) {
+    $erreur .= '<div class="alert alert-success"><p>Le livre '.$_GET['id'].' à bien été supprimé.</p></div>';
+  }
+
+  /* ==================================================================== */
+  // SUPPRESSION 
+  if ( isset($_GET['stat']) && $_GET['stat'] == "delete" && !empty($_GET['id']) ) {
+    $id = $_GET['id'];
+    $em->remove($id);
+    header('location:livre.php?method=suppr&id='.$id);
+  }
+  // MODIFICATION
+  if ( isset($_GET['stat']) && $_GET['stat'] == "edit" && !empty($_GET['id']) ) {
+    $id = $_GET['id'];
+    $modif = $em->find($id);
+  }
+
+  /* ==================================================================== */
+
 }
 if($_POST){
 
@@ -28,11 +57,22 @@ if($_POST){
     $_POST['auteur'] = strtoupper($_POST['auteur']);
     $auteur = $_POST['auteur'];
     $titre = $_POST['titre'];
-    $em->replace($_POST);
-    header('location:livre.php?method=insert&auteur='.$auteur.'&titre='.$titre);
+    if (!empty($_POST['id_livre'])) {
+      $em->update($_POST);
+      header('location:livre.php?method=modif&auteur='.$auteur.'&titre='.$titre);
+    } else {
+      $em->replace($_POST);
+      header('location:livre.php?method=insert&auteur='.$auteur.'&titre='.$titre);
+    }
   }
 
 }
+
+// VARIABLE DE VALUE :
+$valueId = (!empty($modif[0]['id_livre'])) ? '<input type="hidden" name="id_livre" value="'.$modif[0]['id_livre'].'" />' : '';
+
+$valueAuteur = (!empty($modif[0]['auteur'])) ? 'value="'.$modif[0]['auteur'].'"' : '';
+$valueTitre = (!empty($modif[0]['titre'])) ? 'value="'.$modif[0]['titre'].'"' : '';
 
 ?>
 <!DOCTYPE html>
@@ -74,6 +114,8 @@ if($_POST){
 
       <?= $erreur; ?>
 
+      <?= '<p>Nombre de livres : <span class="badge">'.$em->rowCount().'</span></p>'; ?>
+
       <?php 
         echo '<table class="table" style="width:100%; margin: 30px 0;"><thead><tr>';
         for($i=0; $i < $em->columnCount(); $i++)
@@ -97,18 +139,20 @@ if($_POST){
       ?>
 
       <form method="post" action="livre.php">
+
+        <?= $valueId; ?>
         
         <div class="form-group">
           <label for="auteur">Auteur</label>
-          <input type="text" name="auteur" class="form-control" id="auteur" placeholder="auteur">
+          <input type="text" name="auteur" class="form-control" id="auteur" placeholder="auteur" <?= $valueAuteur; ?> />
         </div>
 
         <div class="form-group">
           <label for="titre">Titre</label>
-          <input type="text" name="titre" class="form-control" id="titre" placeholder="titre">
+          <input type="text" name="titre" class="form-control" id="titre" placeholder="titre" <?= $valueTitre; ?> />
         </div>
 
-        <button type="submit" class="btn btn-default">Ajouter</button>
+        <button type="submit" class="btn btn-default"><?= (!empty($_GET['stat']) && $_GET['stat'] == 'edit') ? "Modifier" : "Ajouter"; ?></button>
 
       </form>
 

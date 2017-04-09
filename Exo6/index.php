@@ -8,14 +8,46 @@ require "inc/function.inc.php";
 
 // EXO 6.3 : DONE
 
-// EXO 6.4 :
+// EXO 6.4 : DONE
+
+// EXO 6.5 : DONE
+
+// EXO 6.6 : 
 
 $abonne = $em->setTable("abonne")->findAll("id_abonne", "DESC");
 
 $erreur = '';
-if (isset($_GET) && isset($_GET['method']) == "insert" && isset($_GET['name'])) {
-	$erreur .= '<div class="alert alert-success"><p>L\'abonné '.$_GET['name'].' à bien été ajouté.</p></div>';
+if ($_GET) {
+	
+	/* ==================================================================== */
+  	// MESSAGE D AJOUT
+	if ( isset($_GET['method']) && $_GET['method'] == "insert" && isset($_GET['name']) ) {
+		$erreur .= '<div class="alert alert-success"><p>L\'abonné '.$_GET['name'].' à bien été ajouté.</p></div>';
+	}
+	// MESSAGE DE SUPPRESSION
+	if ( isset($_GET['method']) && $_GET['method'] == "suppr" && !empty($_GET['id']) ) {
+		$erreur .= '<div class="alert alert-success"><p>L\'abonné '.$_GET['id'].' à bien été supprimé.</p></div>';
+	}
+	// MESSAGE DE MODIF
+	if ( isset($_GET['method']) && $_GET['method'] == "modif" && isset($_GET['name']) ) {
+    	$erreur .= '<div class="alert alert-success"><p>L\'abonné '.$_GET['name'].' à bien été modifié.</p></div>';
+  	}
+
+	/* ==================================================================== */
+	// SUPPRESSION 
+	if ( isset($_GET['stat']) && $_GET['stat'] == "delete" && !empty($_GET['id']) ) {
+		$id = $_GET['id'];
+		$em->remove($id);
+		header('location:index.php?method=suppr&id='.$id);
+	}
+	// MODIFICATION
+  	if ( isset($_GET['stat']) && $_GET['stat'] == "edit" && !empty($_GET['id']) ) {
+    	$id = $_GET['id'];
+    	$modif = $em->find($id);
+  	}
+
 }
+
 if($_POST){
 
 	// ------------ CONTROLES ET ERREURS :
@@ -29,11 +61,21 @@ if($_POST){
 	// ------------ VALIDATION :
 	if( empty($erreur) ){ // Si $erreur est vide donc pas d erreur
 		$prenom = $_POST['prenom'];
-		$em->replace($_POST);
-		header('location:index.php?method=insert&name='.$prenom);
+		if (!empty($_POST['id_abonne'])) {
+			$em->update($_POST);
+      		header('location:index.php?method=modif&name='.$prenom);
+	    } else {
+	    	$em->replace($_POST);
+	      	header('location:index.php?method=insert&name='.$prenom);
+	    }
 	}
 
 }
+
+// VARIABLE DE VALUE :
+$valueId = (!empty($modif[0]['id_abonne'])) ? '<input type="hidden" name="id_abonne" value="'.$modif[0]['id_abonne'].'" />' : '';
+
+$valuePrenom = (!empty($modif[0]['prenom'])) ? 'value="'.$modif[0]['prenom'].'"' : '';
 
 ?>
 <!DOCTYPE html>
@@ -73,6 +115,8 @@ if($_POST){
 
     	<?= $erreur; ?>
 
+    	<?= '<p>Nombre d\'abonnés : <span class="badge">'.$em->rowCount().'</span></p>'; ?>
+
     	<?php 
     		echo '<table class="table" style="width:100%; margin: 30px 0;"><thead><tr>';
 			for($i=0; $i < $em->columnCount(); $i++)
@@ -96,13 +140,15 @@ if($_POST){
     	?>
 
     	<form method="post" action="index.php">
+
+    		<?= $valueId; ?>
     		
     		<div class="form-group">
 			    <label for="prenom">Prénom</label>
-			    <input type="text" name="prenom" class="form-control" id="prenom" placeholder="prénom">
+			    <input type="text" name="prenom" class="form-control" id="prenom" placeholder="prénom" <?= $valuePrenom; ?> />
 			</div>
 
-			<button type="submit" class="btn btn-default">Ajouter</button>
+			<button type="submit" class="btn btn-default"><?= (!empty($_GET['stat']) && $_GET['stat'] == 'edit') ? "Modifier" : "Ajouter"; ?></button>
 
     	</form>
 

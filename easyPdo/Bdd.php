@@ -291,7 +291,10 @@ class Bdd {
 
 
     /**
-    *
+    * Insert une nouvelle ligne si la clé fournit n'existe pas ou de la mettre à jour sinon.
+    * /!\ si MaJ - effectue un DELETE puis un INSERT /!\
+    * @param array $data Un tableau associatif de valeurs à insérer Ou directement un $_POST
+    * @return (Bool) true / false
     */
     public function replace(array $data)
     {
@@ -317,6 +320,56 @@ class Bdd {
 			$pdo_stmt->bindValue(":".$key, $value);
 		}
 		$result = $pdo_stmt->execute();
+		return $result;
+    }
+
+
+    /**
+    *
+    */
+    public function update(array $data)
+    {
+    	self::tableExiste();
+		$bdd = self::connexion_base();
+		// On récupère l'ID de la ligne a modifier
+		foreach ($data as $key => $value) {
+			if (self::primaryKey() == $key) { $id = $value; }
+		}
+		if (!is_numeric($id)){ return false; }
+
+		$sql = "UPDATE " . $this->table . " SET ";
+		foreach($data as $key => $value){
+			$sql .= "$key = :$key, ";
+		}
+		$sql = substr($sql, 0, -2);
+		$sql .= " WHERE ".self::primaryKey()." = :id";
+
+		$pdo_stmt = $bdd->prepare($sql);
+		foreach($data as $key => $value){
+			if (is_string($value)) {
+				$value = htmlentities($value, ENT_QUOTES); // anti injection SQL
+			}
+			$pdo_stmt->bindValue(":".$key, $value);
+		}
+		$pdo_stmt->bindValue(":id", $id);
+		$result = $pdo_stmt->execute();
+		return $result;
+    }
+
+
+    /**
+    *
+    */
+    public function sqlQuery($sql)
+    {
+    	self::tableExiste();
+		$bdd = self::connexion_base();
+
+    	$pdo_stmt = $bdd->prepare($sql);
+    	$pdo_stmt->execute();
+
+    	$result = $pdo_stmt->fetchAll();
+    	
 		return $result;
     }
 
